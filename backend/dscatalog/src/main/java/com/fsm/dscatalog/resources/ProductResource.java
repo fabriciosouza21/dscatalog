@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.fsm.dscatalog.dto.CategoryDTO;
-import com.fsm.dscatalog.services.CategoryService;
+import com.fsm.dscatalog.dto.ProductDTO;
+import com.fsm.dscatalog.services.ProductService;
 
 
 
@@ -27,13 +27,13 @@ import com.fsm.dscatalog.services.CategoryService;
 
 
 @RestController
-@RequestMapping(value = "/categories")
-public class CategoryResource {
+@RequestMapping(value = "/products")
+public class ProductResource {
 	@Autowired
-	CategoryService service;
+	ProductService service;
 	
 	@GetMapping
-	public ResponseEntity<Page<CategoryDTO>> findAll(
+	public ResponseEntity<Page<ProductDTO>> findAll(
 			@RequestParam(value = "page", defaultValue = "0") Integer page,
 			@RequestParam(value = "linesPerPage", defaultValue = "12") Integer linesPerPage,
 			@RequestParam(value = "direction", defaultValue = "DESC") String direction,
@@ -41,20 +41,20 @@ public class CategoryResource {
 			
 			){
 		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction) ,orderBy);
-		Page<CategoryDTO> categories = service.findAll(pageRequest);
+		Page<ProductDTO> categories = service.findAll(pageRequest);
 		return ResponseEntity.ok().body(categories);	
 		
 	}
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<CategoryDTO> findById(@PathVariable Long id){
-		CategoryDTO category = service.findById(id);
+	public ResponseEntity<ProductDTO> findById(@PathVariable Long id){
+		ProductDTO category = service.findById(id);
 		return ResponseEntity.ok().body(category);	
 		
 	}
 	
 	@PostMapping
-	public ResponseEntity<CategoryDTO> insert(@RequestBody CategoryDTO newCategory){
-		CategoryDTO category = service.insert(newCategory);
+	public ResponseEntity<ProductDTO> insert(@RequestBody ProductDTO newProduct){
+		ProductDTO category = service.insert(newProduct);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
 				buildAndExpand(category.getId()).toUri();
 		return ResponseEntity.created(uri).body(category);	
@@ -62,8 +62,8 @@ public class CategoryResource {
 	}
 	
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<CategoryDTO> update(@PathVariable Long id, @RequestBody CategoryDTO updateCategory){
-		CategoryDTO category = service.update(id,updateCategory);
+	public ResponseEntity<ProductDTO> update(@PathVariable Long id, @RequestBody ProductDTO updateProduct){
+		ProductDTO category = service.update(id,updateProduct);
 		return ResponseEntity.ok().body(category);	
 		
 	}
