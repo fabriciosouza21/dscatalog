@@ -1,23 +1,41 @@
 package com.fsm.dscatalog.services;
 
+import static org.mockito.Mockito.times;
+
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.fsm.dscatalog.entities.Product;
 import com.fsm.dscatalog.repositories.ProductRepository;
+import com.fsm.dscatalog.services.exception.DatabaseException;
 import com.fsm.dscatalog.services.exception.NotFoundException;
+import com.fsm.dscatalog.tests.Factory;
 
 @ExtendWith(SpringExtension.class)
 public class ProductServiceTests {
 	
 	private long existingId;
 	private long nonExistingId;
+	private long dependentId;
+	private PageImpl<Product> page;
 	
+	private Product product;
 	
 	@InjectMocks
 	private ProductService service;
@@ -29,15 +47,44 @@ public class ProductServiceTests {
 	void setUp() throws Exception {
 		existingId = 1L;
 		nonExistingId = 1000L;
+		dependentId = 4;
+		product = Factory.createProduct();
+		page = new PageImpl<>(List.of(product));
+		
+		Mockito.when(repository.findById(existingId)).thenReturn(Optional.of(product));
+		Mockito.when(repository.findById(nonExistingId)).thenReturn(Optional.empty());
+		Mockito.when(repository.save(ArgumentMatchers.any())).thenReturn(product);
+		Mockito.when(repository.findAll((Pageable)ArgumentMatchers.any())).thenReturn(page);
 		
 		Mockito.doNothing().when(repository).deleteById(existingId);
-		Mockito.doThrow(NotFoundException.class).when(repository).deleteById(nonExistingId);
+		Mockito.doThrow(EmptyResultDataAccessException.class).when(repository).deleteById(nonExistingId);
+		Mockito.doThrow(DataIntegrityViolationException.class).when(repository).deleteById(dependentId);
+			
+	}
+	
+	@Test
+	public void findAllPagedShouldReturnPage() {
+		PageRequest pageRequest = PageRequest.of(0, 5);
 		
+		Page<Product> page = repository.findAll(pageRequest);
+		
+		Assertions.assertNotNull(page);
+		Mockito.verify(repository).findAll(pageRequest);
+	}
+	
+	@Test
+	public void deleteShouldThrowDatabaseExceptionWhenDependentId() {
+		
+		Assertions.assertThrows(DatabaseException.class,()-> {
+			service.delete(dependentId);
+		});
+		Mockito.verify(repository, Mockito.times(1)).deleteById(dependentId);
 		
 	}
+	
 
 	@Test
-	public void deleteShouldDoNothingWhenIdExists() {
+	public void deleteShouldThrowDoNothingWhenIdExists() {
 		
 		
 		Assertions.assertDoesNotThrow(()-> {
@@ -48,7 +95,7 @@ public class ProductServiceTests {
 	}
 	
 	@Test
-	public void deleteShouldDoNothingWhenIdDoesNotExists() {
+	public void deleteShouldThrowNotFoundExceptionWhenIdDoesNotExists() {
 		
 		Assertions.assertThrows(NotFoundException.class,()-> {
 			service.delete(nonExistingId);
