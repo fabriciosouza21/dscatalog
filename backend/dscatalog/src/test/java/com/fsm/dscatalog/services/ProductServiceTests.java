@@ -1,7 +1,5 @@
 package com.fsm.dscatalog.services;
 
-import static org.mockito.Mockito.times;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +21,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.fsm.dscatalog.dto.CategoryDTO;
 import com.fsm.dscatalog.dto.ProductDTO;
 import com.fsm.dscatalog.entities.Category;
 import com.fsm.dscatalog.entities.Product;
