@@ -11,7 +11,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fsm.dscatalog.dto.ProductDTO;
-import com.fsm.dscatalog.entities.Product;
 import com.fsm.dscatalog.repositories.ProductRepository;
 import com.fsm.dscatalog.services.exception.NotFoundException;
 
@@ -19,15 +18,17 @@ import com.fsm.dscatalog.services.exception.NotFoundException;
 @Transactional
 public class ProductServiceIT {
 	
-	private long existingId;
-	private long nonExistId;
-	private int totalProduct;
-	
 	@Autowired
 	private ProductService service;
 	
 	@Autowired
 	private ProductRepository repository;
+	
+	private long existingId;
+	private long nonExistId;
+	private int totalProduct;
+	
+
 	
 	@BeforeEach
 	void setUp() throws Exception {
