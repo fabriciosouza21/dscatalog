@@ -22,10 +22,6 @@ import com.fsm.dscatalog.dto.ProductDTO;
 import com.fsm.dscatalog.services.ProductService;
 
 
-
-
-
-
 @RestController
 @RequestMapping(value = "/products")
 public class ProductResource {
