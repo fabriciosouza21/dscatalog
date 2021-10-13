@@ -5,15 +5,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
+
 import com.fsm.dscatalog.entities.Category;
 import com.fsm.dscatalog.entities.Product;
 
 public class ProductDTO {
 	private Long id;
+	@Size(min = 5, max = 40)
+	@NotBlank(message = "não pode ser vazio")
 	private String name;
+	@NotBlank(message = "não pode ser vazio")
 	private String description;
+	@Positive
 	private Double price;
 	private String imgUrl;
+	@PastOrPresent
 	private Instant date;
 	
 	private List<CategoryDTO> categories = new ArrayList<>();
