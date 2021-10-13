@@ -2,6 +2,8 @@ package com.fsm.dscatalog.resources;
 
 import java.net.URI;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +20,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.fsm.dscatalog.dto.UserDTO;
 import com.fsm.dscatalog.dto.UserInsertDTO;
+import com.fsm.dscatalog.dto.UserUpdateDTO;
 import com.fsm.dscatalog.services.UserService;
 
 @RestController
@@ -40,7 +43,7 @@ public class UserResource {
 	}
 	
 	@PostMapping
-	public ResponseEntity<UserDTO> insert(@RequestBody UserInsertDTO newUser){
+	public ResponseEntity<UserDTO> insert(@Valid @RequestBody UserInsertDTO newUser){
 		UserDTO users = service.insert(newUser);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
 				buildAndExpand(users.getId()).toUri();
@@ -49,7 +52,7 @@ public class UserResource {
 	}
 	
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserDTO updateUser){
+	public ResponseEntity<UserDTO> update( @PathVariable Long id,@Valid @RequestBody UserUpdateDTO updateUser){
 		UserDTO users = service.update(id,updateUser);
 		return ResponseEntity.ok().body(users);	
 		
